@@ -1,236 +1,110 @@
-/*
-Black & Gold Writer Dashboard
-Single-file React component (export default) built with TailwindCSS + shadcn/ui style.
-Usage:
-- Place this file in a React app (create-react-app / Vite).
-- TailwindCSS must be set up. Use the provided Tailwind class names.
-- Install dependencies if you want charts/icons: recharts, lucide-react, framer-motion (optional).
-  npm install recharts lucide-react framer-motion
-
-Features:
-- Black & gold color scheme
-- Header with quick actions
-- Stats cards (words, scenes, submissions, awards)
-- Line chart for productivity (Recharts)
-- Recent projects list with progress
-- Active draft / notes panel
-- Simple writing timer (start/stop/reset)
-- Submissions tracker and recent activity feed
-
-Customize freely — tell me what to change and I'll update it.
-*/
-
-import React, { useState, useEffect, useRef } from "react";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import { BookOpen, Clock, PenTool, Award, Send, Menu } from "lucide-react";
-import { motion } from "framer-motion";
-
-const gold = "#D4AF37"; // gold accent
-
-const sampleChart = [
-  { day: "Mon", words: 1200 },
-  { day: "Tue", words: 2300 },
-  { day: "Wed", words: 1800 },
-  { day: "Thu", words: 2600 },
-  { day: "Fri", words: 1500 },
-  { day: "Sat", words: 3200 },
-  { day: "Sun", words: 2100 },
-];
-
-const sampleProjects = [
-  { id: 1, title: "Midnight Sonata (Novel)", type: "Novel", progress: 72, deadline: "2026-02-14" },
-  { id: 2, title: "Echoes of Tomorrow (Screenplay)", type: "Movie", progress: 44, deadline: "2025-12-01" },
-  { id: 3, title: "Short: Golden Hour", type: "Short Story", progress: 95, deadline: "2025-10-30" },
-];
-
-export default function BlackGoldWriterDashboard() {
-  const [projects, setProjects] = useState(sampleProjects);
-  const [notes, setNotes] = useState("একটি ছোট নোট: চরিত্রের ভিতরে লুকানো সত্য প্রকাশ করুন...");
-  const [timer, setTimer] = useState(0);
-  const [running, setRunning] = useState(false);
-  const timerRef = useRef(null);
-
-  useEffect(() => {
-    if (running) {
-      timerRef.current = setInterval(() => setTimer(t => t + 1), 1000);
-    } else if (timerRef.current) {
-      clearInterval(timerRef.current);
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Black & Gold Writer Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #f5f5f5;
     }
-    return () => clearInterval(timerRef.current);
-  }, [running]);
-
-  function formatTime(s) {
-    const mm = String(Math.floor(s / 60)).padStart(2, "0");
-    const ss = String(s % 60).padStart(2, "0");
-    return `${mm}:${ss}`;
+    header {
+      background: #111;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #333;
+    }
+    .gold { color: #d4af37; }
+    .btn {
+      padding: 8px 14px;
+      border: 1px solid #d4af37;
+      background: transparent;
+      color: #d4af37;
+      cursor: pointer;
+    }
+    .stats {
+      display: flex;
+      gap: 20px;
+      margin: 20px;
+    }
+    .card {
+      flex: 1;
+      background: #111;
+      border: 1px solid #333;
+      padding: 15px;
+      border-radius: 6px;
+    }
+    .projects, .notes, .timer {
+      margin: 20px;
+      background: #111;
+      border: 1px solid #333;
+      padding: 15px;
+      border-radius: 6px;
+    }
+    textarea {
+      width: 100%;
+      height: 120px;
+      background: #000;
+      color: #fff;
+      border: 1px solid #333;
+      padding: 8px;
+      resize: none;
+    }
+    .timer-display {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    button { cursor: pointer; }
+  </style>
+</head>
+<body>
+<header>
+  <h2>লেখকের ড্যাশবোর্ড <span class="gold">Black & Gold</span></h2>
+  <button class="btn">সাবমিশন</button>
+</header>
+<div class="stats">
+  <div class="card"><h3>আজ লিখেছেন</h3><p>2600 শব্দ</p></div>
+  <div class="card"><h3>দৃশ্য</h3><p>8</p></div>
+  <div class="card"><h3>সাবমিশন</h3><p>3</p></div>
+</div>
+<div class="projects">
+  <h3>চলমান প্রকল্পসমূহ</h3>
+  <ul>
+    <li>Midnight Sonata – 72%</li>
+    <li>Echoes of Tomorrow – 44%</li>
+    <li>Golden Hour – 95%</li>
+  </ul>
+</div>
+<div class="notes">
+  <h3>নোটস</h3>
+  <textarea placeholder="আপনার ভাবনা লিখুন..."></textarea>
+</div>
+<div class="timer">
+  <h3>রাইটিং টাইমার</h3>
+  <div class="timer-display" id="display">00:00</div>
+  <button onclick="startTimer()">Start</button>
+  <button onclick="pauseTimer()">Pause</button>
+  <button onclick="resetTimer()">Reset</button>
+</div>
+<script>
+  let seconds = 0;
+  let timer = null;
+  function updateDisplay() {
+    const m = String(Math.floor(seconds/60)).padStart(2,'0');
+    const s = String(seconds%60).padStart(2,'0');
+    document.getElementById('display').textContent = `${m}:${s}`;
   }
-
-  function resetTimer() { setTimer(0); setRunning(false); }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-gray-100 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <header className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <button className="p-2 rounded-md bg-black/30 backdrop-blur-sm border border-gray-800">
-              <Menu className="w-5 h-5 text-gray-100" />
-            </button>
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight">লেখকের ড্যাশবোর্ড</h1>
-              <p className="text-sm text-gray-300">ব্ল্যাক & গোল্ড — তোমার শিল্পকে মান্যতা দিন</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <button className="px-4 py-2 rounded-md border border-gold shadow-sm" style={{ borderColor: gold }}>
-              <span className="flex items-center gap-2 text-sm text-gray-100"><Send className="w-4 h-4" /> সাবমিশন</span>
-            </button>
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <div className="text-xs text-gray-400">স্বাগতম,</div>
-                <div className="font-medium">আপনি নাম</div>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-black flex items-center justify-center text-gold" style={{ color: gold }}>
-                <BookOpen className="w-5 h-5" />
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Main grid */}
-        <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <section className="lg:col-span-2 space-y-6">
-            {/* Stats & chart */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <StatCard title="শব্দ আজ" value="2,600" icon={<PenTool />} accent={gold} />
-              <StatCard title="দৃশ্য/সিন" value="8" icon={<Clock />} accent={gold} />
-              <StatCard title="সাবমিশন" value="3" icon={<Send />} accent={gold} />
-            </div>
-
-            <div className="bg-gradient-to-br from-[#070707] to-[#0b0b0b] rounded-2xl p-4 border border-gray-800">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-semibold">সপ্তাহব্যাপী উৎপাদন</h3>
-                <div className="text-sm text-gray-400">শব্দ/দিন</div>
-              </div>
-              <div style={{ height: 220 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={sampleChart}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#111" />
-                    <XAxis dataKey="day" stroke="#666" />
-                    <YAxis stroke="#666" />
-                    <Tooltip wrapperStyle={{ background: '#0b0b0b', border: `1px solid ${gold}` }} />
-                    <Line type="monotone" dataKey="words" stroke={gold} strokeWidth={3} dot={{ r: 3 }} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* Projects table */}
-            <div className="bg-gradient-to-br from-[#070707] to-[#0b0b0b] rounded-2xl p-4 border border-gray-800">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">চলমান প্রকল্পসমূহ</h3>
-                <div className="text-sm text-gray-400">আপডেট: আজ</div>
-              </div>
-              <div className="space-y-3">
-                {projects.map(p => (
-                  <div key={p.id} className="flex items-center justify-between bg-black/30 p-3 rounded-lg border border-gray-800">
-                    <div>
-                      <div className="font-medium">{p.title}</div>
-                      <div className="text-xs text-gray-400">{p.type} • ডেডলাইন: {p.deadline}</div>
-                    </div>
-                    <div className="w-48">
-                      <div className="text-xs text-gray-300 mb-1">প্রগতি — {p.progress}%</div>
-                      <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
-                        <div className="h-2 rounded-full" style={{ width: `${p.progress}%`, background: `linear-gradient(90deg, ${gold}, #b88f2f)` }} />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </section>
-
-          {/* Right column */}
-          <aside className="space-y-6">
-            {/* Timer */}
-            <div className="bg-gradient-to-br from-[#070707] to-[#0b0b0b] rounded-2xl p-4 border border-gray-800">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg font-semibold flex items-center gap-2"><Clock className="w-4 h-4" /> রাইটিং টাইমার</h3>
-                <div className="text-sm text-gray-400">ফোকাস টাইম</div>
-              </div>
-              <div className="flex flex-col items-center gap-3">
-                <div className="text-3xl font-mono">{formatTime(timer)}</div>
-                <div className="flex gap-2">
-                  <button onClick={() => setRunning(r => !r)} className="px-3 py-1 rounded-md border" style={{ borderColor: gold }}>
-                    {running ? 'Pause' : 'Start'}
-                  </button>
-                  <button onClick={resetTimer} className="px-3 py-1 rounded-md border border-gray-700">Reset</button>
-                </div>
-                <div className="text-xs text-gray-400">টাইমারটি শব্দ গণনা ও ফোকাস সেশন ট্র্যাক করতে সহায়ক।</div>
-              </div>
-            </div>
-
-            {/* Notes */}
-            <div className="bg-gradient-to-br from-[#070707] to-[#0b0b0b] rounded-2xl p-4 border border-gray-800">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-semibold flex items-center gap-2"><PenTool className="w-4 h-4"/> নোটস</h3>
-                <div className="text-xs text-gray-400">দ্রুত ধারণা</div>
-              </div>
-              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={6} className="w-full bg-black/20 p-3 rounded-lg border border-gray-800 text-sm" />
-            </div>
-
-            {/* Submissions / awards */}
-            <div className="bg-gradient-to-br from-[#070707] to-[#0b0b0b] rounded-2xl p-4 border border-gray-800">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg font-semibold flex items-center gap-2"><Award className="w-4 h-4"/> অ্যাওয়ার্ডস & সাবমিশন</h3>
-                <div className="text-sm text-gray-400">পরে আপডেট করুন</div>
-              </div>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li className="flex items-center justify-between"><span>কনটেস্ট: 'সোনালী সন্ধ্যা'</span><span className="text-xs text-gray-400">Submitted</span></li>
-                <li className="flex items-center justify-between"><span>উপন্যাস: Literary Prize</span><span className="text-xs text-gold" style={{ color: gold }}>নমিনেটেড</span></li>
-                <li className="flex items-center justify-between"><span>ফিল্ম ফেস্ট: স্ক্রিপ্ট</span><span className="text-xs text-gray-400">Pending</span></li>
-              </ul>
-            </div>
-
-            {/* Activity */}
-            <div className="bg-gradient-to-br from-[#070707] to-[#0b0b0b] rounded-2xl p-4 border border-gray-800">
-              <h3 className="text-lg font-semibold mb-3">সাম্প্রতিক কার্যকলাপ</h3>
-              <div className="space-y-2 text-sm text-gray-300">
-                <ActivityItem text="Echoes of Tomorrow — new scene added" />
-                <ActivityItem text="Submitted Short: Golden Hour to magazine" />
-                <ActivityItem text="Received reviewer feedback for Midnight Sonata" />
-              </div>
-            </div>
-
-          </aside>
-        </main>
-
-        <footer className="mt-8 text-center text-xs text-gray-500">© {new Date().getFullYear()} Writer Dashboard — Black & Gold Theme</footer>
-      </div>
-    </div>
-  );
-}
-
-function StatCard({ title, value, icon, accent }){
-  return (
-    <div className="p-4 rounded-2xl bg-black/30 border border-gray-800 flex items-center gap-4">
-      <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.2))', color: accent }}>
-        {icon}
-      </div>
-      <div>
-        <div className="text-xs text-gray-400">{title}</div>
-        <div className="text-lg font-semibold">{value}</div>
-      </div>
-    </div>
-  );
-}
-
-function ActivityItem({ text }){
-  return (
-    <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="p-2 rounded-md bg-black/20 border border-gray-800">
-      <div className="text-sm">{text}</div>
-      <div className="text-xs text-gray-500">১ ঘন্টা আগে</div>
-    </motion.div>
-  );
-}
+  function startTimer() {
+    if (timer) return;
+    timer = setInterval(()=>{ seconds++; updateDisplay(); },1000);
+  }
+  function pauseTimer() { clearInterval(timer); timer = null; }
+  function resetTimer() { pauseTimer(); seconds = 0; updateDisplay(); }
+</script>
+</body>
+</html>
