@@ -1,168 +1,110 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <title>Book Entry App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Black & Gold Writer Dashboard</title>
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
+      background: #000;
+      color: #f5f5f5;
+    }
+    header {
+      background: #111;
+      padding: 15px 25px;
       display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #333;
     }
-
-    /* Sidebar */
-    .sidebar {
-      width: 200px;
-      background-color: #2c3e50;
-      color: white;
-      height: 100vh;
-      padding: 20px;
+    .gold { color: #d4af37; }
+    .btn {
+      padding: 8px 14px;
+      border: 1px solid #d4af37;
+      background: transparent;
+      color: #d4af37;
+      cursor: pointer;
     }
-
-    .sidebar h2 {
-      font-size: 18px;
-      margin-bottom: 20px;
+    .stats {
+      display: flex;
+      gap: 20px;
+      margin: 20px;
     }
-
-    /* Main content */
-    .main {
-      flex-grow: 1;
-      padding: 20px;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      margin-bottom: 10px;
-      box-sizing: border-box;
-    }
-
-    button {
-      padding: 8px 15px;
-      margin-right: 10px;
-      margin-top: 10px;
-    }
-
-    .book-entry {
-      border: 1px solid #ccc;
+    .card {
+      flex: 1;
+      background: #111;
+      border: 1px solid #333;
       padding: 15px;
+      border-radius: 6px;
+    }
+    .projects, .notes, .timer {
+      margin: 20px;
+      background: #111;
+      border: 1px solid #333;
+      padding: 15px;
+      border-radius: 6px;
+    }
+    textarea {
+      width: 100%;
+      height: 120px;
+      background: #000;
+      color: #fff;
+      border: 1px solid #333;
+      padding: 8px;
+      resize: none;
+    }
+    .timer-display {
+      font-size: 24px;
       margin-bottom: 10px;
-      position: relative;
     }
-
-    .book-entry button {
-      margin-top: 5px;
-    }
-
-    .buttons {
-      margin-top: 10px;
-    }
-
-    .copy-message {
-      color: green;
-      font-size: 12px;
-      display: none;
-    }
+    button { cursor: pointer; }
   </style>
 </head>
 <body>
-
-  <div class="sidebar">
-    <h2>Book Manager</h2>
-    <p>Add and manage your stories</p>
-  </div>
-
-  <div class="main">
-    <h2>Add New Book</h2>
-    <input type="text" id="bookName" placeholder="Book Name">
-    <input type="text" id="bookTitle" placeholder="Book Title">
-    <textarea id="bookStory" rows="5" placeholder="Full Story"></textarea>
-    <button onclick="addBook()">Save Book</button>
-
-    <h2>Saved Books</h2>
-    <div id="bookList"></div>
-  </div>
-
-  <script>
-    let books = JSON.parse(localStorage.getItem('books')) || [];
-
-    function saveToLocalStorage() {
-      localStorage.setItem('books', JSON.stringify(books));
-    }
-
-    function renderBooks() {
-      const bookList = document.getElementById('bookList');
-      bookList.innerHTML = '';
-
-      books.forEach((book, index) => {
-        const div = document.createElement('div');
-        div.className = 'book-entry';
-
-        const content = `
-          <strong>Name:</strong> <span contenteditable="true" oninput="editBook(${index}, 'name', this.innerText)">${book.name}</span><br>
-          <strong>Title:</strong> <span contenteditable="true" oninput="editBook(${index}, 'title', this.innerText)">${book.title}</span><br>
-          <strong>Story:</strong><br>
-          <div contenteditable="true" oninput="editBook(${index}, 'story', this.innerText)" style="white-space: pre-wrap;">${book.story}</div>
-          <div class="buttons">
-            <button onclick="deleteBook(${index})">Delete</button>
-            <button onclick="copyBook(${index})">Copy</button>
-            <span class="copy-message" id="copy-msg-${index}">Copied!</span>
-          </div>
-        `;
-
-        div.innerHTML = content;
-        bookList.appendChild(div);
-      });
-    }
-
-    function addBook() {
-      const name = document.getElementById('bookName').value.trim();
-      const title = document.getElementById('bookTitle').value.trim();
-      const story = document.getElementById('bookStory').value.trim();
-
-      if (!name || !title || !story) {
-        alert('Please fill all fields!');
-        return;
-      }
-
-      books.push({ name, title, story });
-      saveToLocalStorage();
-      renderBooks();
-
-      document.getElementById('bookName').value = '';
-      document.getElementById('bookTitle').value = '';
-      document.getElementById('bookStory').value = '';
-    }
-
-    function deleteBook(index) {
-      if (confirm('Are you sure you want to delete this book?')) {
-        books.splice(index, 1);
-        saveToLocalStorage();
-        renderBooks();
-      }
-    }
-
-    function editBook(index, field, value) {
-      books[index][field] = value;
-      saveToLocalStorage();
-    }
-
-    function copyBook(index) {
-      const book = books[index];
-      const text = `Book Name: ${book.name}\nTitle: ${book.title}\nStory:\n${book.story}`;
-
-      navigator.clipboard.writeText(text).then(() => {
-        const msg = document.getElementById(`copy-msg-${index}`);
-        msg.style.display = 'inline';
-        setTimeout(() => {
-          msg.style.display = 'none';
-        }, 1000);
-      });
-    }
-
-    // Load existing books on page load
-    renderBooks();
-  </script>
+<header>
+  <h2>লেখকের ড্যাশবোর্ড <span class="gold">Black & Gold</span></h2>
+  <button class="btn">সাবমিশন</button>
+</header>
+<div class="stats">
+  <div class="card"><h3>আজ লিখেছেন</h3><p>2600 শব্দ</p></div>
+  <div class="card"><h3>দৃশ্য</h3><p>8</p></div>
+  <div class="card"><h3>সাবমিশন</h3><p>3</p></div>
+</div>
+<div class="projects">
+  <h3>চলমান প্রকল্পসমূহ</h3>
+  <ul>
+    <li>Midnight Sonata – 72%</li>
+    <li>Echoes of Tomorrow – 44%</li>
+    <li>Golden Hour – 95%</li>
+  </ul>
+</div>
+<div class="notes">
+  <h3>নোটস</h3>
+  <textarea placeholder="আপনার ভাবনা লিখুন..."></textarea>
+</div>
+<div class="timer">
+  <h3>রাইটিং টাইমার</h3>
+  <div class="timer-display" id="display">00:00</div>
+  <button onclick="startTimer()">Start</button>
+  <button onclick="pauseTimer()">Pause</button>
+  <button onclick="resetTimer()">Reset</button>
+</div>
+<script>
+  let seconds = 0;
+  let timer = null;
+  function updateDisplay() {
+    const m = String(Math.floor(seconds/60)).padStart(2,'0');
+    const s = String(seconds%60).padStart(2,'0');
+    document.getElementById('display').textContent = `${m}:${s}`;
+  }
+  function startTimer() {
+    if (timer) return;
+    timer = setInterval(()=>{ seconds++; updateDisplay(); },1000);
+  }
+  function pauseTimer() { clearInterval(timer); timer = null; }
+  function resetTimer() { pauseTimer(); seconds = 0; updateDisplay(); }
+</script>
 </body>
 </html>
