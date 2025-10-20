@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Responsive Skewed Navbar</title>
+  <style>
+    :root {
+      /* 🎨 Customizable variables */
+      --rect-width: 120px;
+      --rect-height: 35px;
+      --rect-fill: black;
+      --rect-stroke: cyan;
+      --rect-stroke-width: 3px;
+      --rect-transform: skewX(30deg);
+      --rect-radius: 3px;
+      --rect-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      --nav-bg: #000;
+      --nav-gap: 15px;
+      --hover-fill: cyan;
+      --hover-stroke: white;
+    }
+
+    body {
+      margin: 0;
+      background: var(--nav-bg);
+      font-family: "Roboto", Arial, sans-serif;
+    }
+
+    /* 🔹 Navbar container */
+    nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--nav-bg);
+      padding: 15px;
+      gap: var(--nav-gap);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+      flex-wrap: wrap;
+    }
+
+    /* 🔹 Navbar items */
+    .nav-item {
+      width: var(--rect-width);
+      height: var(--rect-height);
+      background: var(--rect-fill);
+      border: var(--rect-stroke-width) solid var(--rect-stroke);
+      transform: var(--rect-transform);
+      border-radius: var(--rect-radius);
+      box-shadow: var(--rect-shadow);
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      color: cyan;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+      touch-action: manipulation; /* ✅ improves mobile tapping */
+    }
+
+    /* 🔹 Text inside skew fix */
+    .nav-item span {
+      transform: skewX(-30deg);
+      display: inline-block;
+      font-size: 0.9rem;
+    }
+
+    /* 🔹 Hover or tap animation */
+    .nav-item:hover,
+    .nav-item:active {
+      background: var(--hover-fill);
+      border-color: var(--hover-stroke);
+      color: black;
+      box-shadow: 0 0 10px cyan;
+      transform: skewX(30deg) scale(1.05);
+    }
+
+    /* 🔹 Responsive adjustments for Android (small screens) */
+    @media (max-width: 600px) {
+      :root {
+        --rect-width: 90px;
+        --rect-height: 30px;
+        --nav-gap: 8px;
+      }
+
+      nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 10px;
+      }
+
+      .nav-item span {
+        font-size: 0.8rem;
+      }
+    }
+
+    /* 🔹 Very small screens (≤400px) — stack vertically */
+    @media (max-width: 400px) {
+      nav {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="#" class="nav-item"><span>Home</span></a>
+    <a href="#" class="nav-item"><span>About</span></a>
+    <a href="#" class="nav-item"><span>Services</span></a>
+    <a href="#" class="nav-item"><span>Projects</span></a>
+    <a href="#" class="nav-item"><span>Contact</span></a>
+  </nav>
+</body>
+</html>
