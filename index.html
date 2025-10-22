@@ -1,110 +1,136 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Black & Gold Writer Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Black & Gold Layout</title>
   <style>
+    /* ===== Root Variables ===== */
+    :root {
+      --bg-color: #000;
+      --text-color: #f5f5f5;
+      --header-bg: #111;
+      --border-color: #333;
+      --accent-color: #d4af37;
+      --font-family: "Arial", sans-serif;
+      --padding: 15px;
+      --radius: 8px;
+      --max-width: 1100px;
+    }
+
+    /* ===== Base Styles ===== */
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #000;
-      color: #f5f5f5;
+      font-family: var(--font-family);
+      background: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
     }
+
+    /* ===== Header ===== */
     header {
-      background: #111;
-      padding: 15px 25px;
+      width: 100%;
+      background: var(--header-bg);
+      padding: var(--padding);
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #333;
     }
-    .gold { color: #d4af37; }
-    .btn {
-      padding: 8px 14px;
-      border: 1px solid #d4af37;
-      background: transparent;
-      color: #d4af37;
-      cursor: pointer;
+
+    header h1 {
+      color: var(--accent-color);
+      margin: 0;
+      font-size: 1.4rem;
     }
-    .stats {
-      display: flex;
-      gap: 20px;
-      margin: 20px;
-    }
-    .card {
-      flex: 1;
-      background: #111;
-      border: 1px solid #333;
-      padding: 15px;
-      border-radius: 6px;
-    }
-    .projects, .notes, .timer {
-      margin: 20px;
-      background: #111;
-      border: 1px solid #333;
-      padding: 15px;
-      border-radius: 6px;
-    }
-    textarea {
+
+    /* ===== Container ===== */
+    .container {
       width: 100%;
-      height: 120px;
-      background: #000;
-      color: #fff;
-      border: 1px solid #333;
-      padding: 8px;
-      resize: none;
+      max-width: var(--max-width);
+      padding: var(--padding);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
     }
-    .timer-display {
-      font-size: 24px;
-      margin-bottom: 10px;
+
+    /* ===== Card ===== */
+    .card {
+      background: var(--header-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: var(--padding);
+      flex: 1 1 300px;
+      min-width: 260px;
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    button { cursor: pointer; }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    }
+
+    /* ===== Button ===== */
+    .btn {
+      padding: 10px 18px;
+      border: 1px solid var(--accent-color);
+      background: transparent;
+      color: var(--accent-color);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .btn:hover {
+      background: var(--accent-color);
+      color: var(--bg-color);
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 700px) {
+      header {
+        flex-direction: column;
+        text-align: center;
+      }
+      .container {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
   </style>
 </head>
+
 <body>
-<header>
-  <h2>লেখকের ড্যাশবোর্ড <span class="gold">Black & Gold</span></h2>
-  <button class="btn">সাবমিশন</button>
-</header>
-<div class="stats">
-  <div class="card"><h3>আজ লিখেছেন</h3><p>2600 শব্দ</p></div>
-  <div class="card"><h3>দৃশ্য</h3><p>8</p></div>
-  <div class="card"><h3>সাবমিশন</h3><p>3</p></div>
-</div>
-<div class="projects">
-  <h3>চলমান প্রকল্পসমূহ</h3>
-  <ul>
-    <li>Midnight Sonata – 72%</li>
-    <li>Echoes of Tomorrow – 44%</li>
-    <li>Golden Hour – 95%</li>
-  </ul>
-</div>
-<div class="notes">
-  <h3>নোটস</h3>
-  <textarea placeholder="আপনার ভাবনা লিখুন..."></textarea>
-</div>
-<div class="timer">
-  <h3>রাইটিং টাইমার</h3>
-  <div class="timer-display" id="display">00:00</div>
-  <button onclick="startTimer()">Start</button>
-  <button onclick="pauseTimer()">Pause</button>
-  <button onclick="resetTimer()">Reset</button>
-</div>
-<script>
-  let seconds = 0;
-  let timer = null;
-  function updateDisplay() {
-    const m = String(Math.floor(seconds/60)).padStart(2,'0');
-    const s = String(seconds%60).padStart(2,'0');
-    document.getElementById('display').textContent = `${m}:${s}`;
-  }
-  function startTimer() {
-    if (timer) return;
-    timer = setInterval(()=>{ seconds++; updateDisplay(); },1000);
-  }
-  function pauseTimer() { clearInterval(timer); timer = null; }
-  function resetTimer() { pauseTimer(); seconds = 0; updateDisplay(); }
-</script>
+  <!-- ===== Header ===== -->
+  <header>
+    <h1>Black & Gold Dashboard</h1>
+    <button class="btn">অ্যাকশন</button>
+  </header>
+
+  <!-- ===== Main Container ===== -->
+  <div class="container">
+    <div class="card">
+      <h2>কার্ড ১</h2>
+      <p>এখানে আপনার কনটেন্ট যাবে।</p>
+      <button class="btn">আরও জানুন</button>
+    </div>
+
+    <div class="card">
+      <h2>কার্ড ২</h2>
+      <p>এখানে অন্য তথ্য বা লিঙ্ক থাকতে পারে।</p>
+      <button class="btn">খুলুন</button>
+    </div>
+
+    <div class="card">
+      <h2>কার্ড ৩</h2>
+      <p>এটি আপনার ড্যাশবোর্ডের একটি সেকশন।</p>
+      <button class="btn">দেখুন</button>
+    </div>
+  </div>
 </body>
 </html>
